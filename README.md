@@ -7,6 +7,6 @@ How to RUN:
 3. python LibraryProject.py
 
 NOTE: First run!
-      Make an Account Username as "admin"
-      choose a password for your like.
+      \nMake an Account Username as "admin"
+      \nchoose a password for your like.
 Required Packages are available in requirements.txt
