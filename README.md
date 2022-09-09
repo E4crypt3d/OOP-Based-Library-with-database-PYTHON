@@ -6,7 +6,7 @@ How to RUN:
 2. pip install -r requirements.txt
 3. python LibraryProject.py
 
-NOTE: First run!
-      \nMake an Account Username as "admin"
-      \nchoose a password for your like.
+NOTE: 1.First run!
+      2.Make an Account Username as "admin"
+      3.choose a password for your like.
 Required Packages are available in requirements.txt
