@@ -11,18 +11,18 @@ class Student:
 		if session.query(user).filter_by(username=self.username).first() is not None:
 			current_user = session.query(user).filter_by(username = self.username).first()
 			if pbkdf2_sha256.verify(self.password, current_user.password):
-				print(f"Welcome the to New OOP Library, {current_user.name}")
+				print(f"Welcome the to New OOP Library, {current_user.name}\n")
 			else:
-				print("\nIncorrect Account Details")
+				print("\nIncorrect Account Details\n")
 				exit()
 		else:
-			print("\nIncorrect Login Details")
+			print("\nIncorrect Login Details\n")
 			exit()
 
 	def signup(name, username, gender, age , password):
 		new_pass = pbkdf2_sha256.hash(password)
 		if session.query(user).filter_by(username=username).first() is not None:
-			print("Username not available for now")
+			print("\nUsername not available for now\n")
 			exit()
 		new_user = user(name=name, username=username,gender=gender,age=age,password=new_pass)
 		session.add(new_user)
@@ -36,7 +36,7 @@ class Books(Student):
 		self.books = avail
 
 	def ShowAvailableBooks(self):
-		print("\nAvailable Books in the Library at the moment")
+		print("\nAvailable Books in the Library at the moment\n")
 		for no, b in enumerate(self.books, 1):
 			print(f"{no} = {b}")
 
@@ -44,52 +44,53 @@ class Books(Student):
 	def BorrowBook(self, requestedBook):
 		if requestedBook in self.books:
 			borrowing = borrowed(book = requestedBook, user = self.username)
+			session.add(borrowing)
 			session.query(books).filter_by(book = requestedBook).delete()
 			session.commit()
-			print(f'\n{requestedBook} has been issued to you, Please return the book after 5 days. Thanks for visiting us')
+			print(f'\n{requestedBook} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
 		else:
-			print('\nThis book is not available at the moment, Thanks for visiting us')
+			print('\nThis book is not available at the moment, Thanks for visiting us\n')
 
 	def returnBook(self, returnit):
 		try:
-			borrow = session.query(borrowed).filter_by(book = returnit).first()
-			if self.username == borrow.user:
+			b = session.query(borrowed).filter_by(book = returnit).first()
+			if self.username == b.user and returnit == b.book:
 				r = books(book= returnit)
 				session.add(r)
 				session.query(borrowed).filter_by(book = returnit).delete()
 				session.commit()
-				print("Thanks for returning the Book have a Great Day")
+				print("\nThanks for returning the Book have a Great Day\n")
 			else:
-				print("Incorrect Book")
-		except Exception:
-			print("Incorrect Book")
+				print("\nIncorrect Book\n")
+		except Exception as e:
+			print(f"\nBook not available Please check for spelling mistakes\n")
 
 			
 	#adding a add book function
 	def add_book(self, book):
 		if self.username == "admin":
-			password = input("Please Enter your password: ")
+			password = input("\nPlease Enter your password: ")
 			adminpass = session.query(user).filter_by(username = self.username).first()
 			if pbkdf2_sha256.verify(password, adminpass.password):
 				new_book = books(book = book)
 				session.add(new_book)
 				session.commit()
-				print(f"Book '{book}' added to the Library")
+				print(f"\nBook '{book}' added to the Library\n")
 			else:
-				print("Admin password incorrect")
+				print("\nAdmin password incorrect\n")
 		else:
-			print("Access not allowed")
+			print("\nAccess not allowed\n")
 			exit()
 
 if __name__ == "__main__":
 	print("Login or Sign Up")
-	print("1 = Login\n2 = Sign up")
+	print("\n1 = Login\n2 = Sign up")
 	new_user_or_not = input("Please Choose a option: ")
 	if new_user_or_not == "1":
-		username = input('Username here : ')
+		username = input('\nUsername here : ')
 		passwd = input('passwd here: ')
 	elif new_user_or_not == "2":
-		name = input("Name: ")
+		name = input("\nName: ")
 		username = input("Username: ")
 		gender = input("Gender: ")
 		age = input("Age: ")
@@ -104,10 +105,10 @@ if __name__ == "__main__":
 	data.login()
 	while True:
 		if username.lower() != 'admin':
-			print('''Choose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\nType "exit" to exit out of Library''')
+			print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\nType "exit" to exit out of Library''')
 		else:
-			print('''Choose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Add a Book\nType "exit" to exit out of Library''')
-		ui = input("What do you wanna do: ")
+			print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Add a Book\nType "exit" to exit out of Library''')
+		ui = input("\nWhat do you wanna do: ")
 		if ui == '1':
 			listed = []
 			for i in session.query(books).all():
@@ -115,16 +116,16 @@ if __name__ == "__main__":
 				data = Books(listed, username, passwd)
 			data.ShowAvailableBooks()
 		elif ui == '2':
-			b = input("Enter the book you wanna borrow: ")
+			b = input("\nEnter the book you wanna borrow: ")
 			data.BorrowBook(b)
 		elif ui == '3':
-			b = input("Enter the book name you wanna return: ")
+			b = input("\nEnter the book name you wanna return: ")
 			data.returnBook(b)
 		elif ui.lower() == 'exit':
-			print('Thanks for Using OOP Library')
+			print('\n\nThanks for Using OOP Library')
 			exit()
 		if username.lower() == 'admin':
 			if ui == '4':
-				b = input("Add a book: ")
+				b = input("\nAdd a book: ")
 				data.add_book(b)
 		
