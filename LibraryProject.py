@@ -28,6 +28,8 @@ class Student:
 		session.add(new_user)
 		session.commit()
 
+
+
 class Books(Student):
 	def __init__(self,avail,username, passwd):
 		super().__init__(username, passwd)
@@ -38,26 +40,26 @@ class Books(Student):
 	def ShowAvailableBooks(self):
 		print("\nAvailable Books in the Library at the moment\n")
 		for no, b in enumerate(self.books, 1):
-			print(f"{no} = {b}")
+			print(f"{no} = {b.title()}")
 
 
 	def BorrowBook(self, requestedBook):
-		if requestedBook in self.books:
-			borrowing = borrowed(book = requestedBook, user = self.username)
+		if requestedBook.lower() in self.books:
+			borrowing = borrowed(book = requestedBook.lower(), user = self.username)
 			session.add(borrowing)
 			session.query(books).filter_by(book = requestedBook).delete()
 			session.commit()
-			print(f'\n{requestedBook} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
+			print(f'\n{requestedBook.title()} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
 		else:
 			print('\nThis book is not available at the moment, Thanks for visiting us\n')
 
 	def returnBook(self, returnit):
 		try:
-			b = session.query(borrowed).filter_by(book = returnit).first()
-			if self.username == b.user and returnit == b.book:
+			b = session.query(borrowed).filter_by(book = returnit.lower()).first()
+			if self.username == b.user and returnit.lower() == b.book:
 				r = books(book= returnit)
 				session.add(r)
-				session.query(borrowed).filter_by(book = returnit).delete()
+				session.query(borrowed).filter_by(book = returnit.lower()).delete()
 				session.commit()
 				print("\nThanks for returning the Book have a Great Day\n")
 			else:
@@ -72,10 +74,10 @@ class Books(Student):
 			password = input("\nPlease Enter your password: ")
 			adminpass = session.query(user).filter_by(username = self.username).first()
 			if pbkdf2_sha256.verify(password, adminpass.password):
-				new_book = books(book = book)
+				new_book = books(book = book.lower())
 				session.add(new_book)
 				session.commit()
-				print(f"\nBook '{book}' added to the Library\n")
+				print(f"\nBook '{book.title()}' added to the Library\n")
 			else:
 				print("\nAdmin password incorrect\n")
 		else:
