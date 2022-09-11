@@ -41,7 +41,7 @@ class borrowed(base):
 	user = Column(String)
 
 	def __repr__(self):
-		return f"{self.id} = {self.book} by {self.user}"
+		return f"{self.id} = {self.book.title()} by {self.user}"
 
 
 base.metadata.create_all(engine)

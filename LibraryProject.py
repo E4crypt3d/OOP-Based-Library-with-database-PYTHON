@@ -45,13 +45,25 @@ class Books(Student):
 
 	def BorrowBook(self, requestedBook):
 		if requestedBook.lower() in self.books:
-			borrowing = borrowed(book = requestedBook.lower(), user = self.username)
-			session.add(borrowing)
-			session.query(books).filter_by(book = requestedBook).delete()
-			session.commit()
-			print(f'\n{requestedBook.title()} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
+			b = session.query(borrowed).filter_by(user = self.username).first()
+			if not b:
+				borrowing = borrowed(book = requestedBook.lower(), user = self.username)
+				session.add(borrowing)
+				session.query(books).filter_by(book = requestedBook).delete()
+				session.commit()
+				print(f'\n{requestedBook.title()} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
+			else:
+				print(f"Please return the previous book {b.book.title()} first")
 		else:
 			print('\nThis book is not available at the moment, Thanks for visiting us\n')
+
+	def userBorrowedbook(self):
+		try:
+			Booklist = session.query(borrowed).filter_by(user = self.username).first()
+			print(Booklist)
+		except Exception:
+			print("No Books borrowed")
+
 
 	def returnBook(self, returnit):
 		try:
@@ -85,49 +97,55 @@ class Books(Student):
 			exit()
 
 if __name__ == "__main__":
-	print("Login or Sign Up")
-	print("\n1 = Login\n2 = Sign up")
-	new_user_or_not = input("Please Choose a option: ")
-	if new_user_or_not == "1":
-		username = input('\nUsername here : ')
-		passwd = input('passwd here: ')
-	elif new_user_or_not == "2":
-		name = input("\nName: ")
-		username = input("Username: ")
-		gender = input("Gender: ")
-		age = input("Age: ")
-		email = input("Email: ")
-		passwd = input("Password: ")
-		Student.signup(name, username, gender, age, passwd)
-	listed = []
-	for i in session.query(books).all():
-		listed.append(str(i))
-	data = Books(listed, username, passwd)
-	data.ShowAvailableBooks()
-	data.login()
-	while True:
-		if username.lower() != 'admin':
-			print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\nType "exit" to exit out of Library''')
-		else:
-			print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Add a Book\nType "exit" to exit out of Library''')
-		ui = input("\nWhat do you wanna do: ")
-		if ui == '1':
-			listed = []
-			for i in session.query(books).all():
-				listed.append(str(i))
-				data = Books(listed, username, passwd)
-			data.ShowAvailableBooks()
-		elif ui == '2':
-			b = input("\nEnter the book you wanna borrow: ")
-			data.BorrowBook(b)
-		elif ui == '3':
-			b = input("\nEnter the book name you wanna return: ")
-			data.returnBook(b)
-		elif ui.lower() == 'exit':
-			print('\n\nThanks for Using OOP Library')
-			exit()
-		if username.lower() == 'admin':
-			if ui == '4':
-				b = input("\nAdd a book: ")
-				data.add_book(b)
-		
+	try:
+		print("Login or Sign Up")
+		print("\n1 = Login\n2 = Sign up")
+		new_user_or_not = input("Please Choose a option: ")
+		if new_user_or_not == "1":
+			username = input('\nUsername here : ')
+			passwd = input('passwd here: ')
+		elif new_user_or_not == "2":
+			name = input("\nName: ")
+			username = input("Username: ")
+			gender = input("Gender: ")
+			age = input("Age: ")
+			email = input("Email: ")
+			passwd = input("Password: ")
+			Student.signup(name, username, gender, age, passwd)
+		listed = []
+		for i in session.query(books).all():
+			listed.append(str(i))
+		data = Books(listed, username, passwd)
+		data.ShowAvailableBooks()
+		data.login()
+		while True:
+			if username.lower() != 'admin':
+				print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Show Borrowed Books\nType "exit" to exit out of Library''')
+			else:
+				print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Show Borrowed Books\n\n5 = Add a Book\nType "exit" to exit out of Library''')
+			ui = input("\nWhat do you wanna do: ")
+			if ui == '1':
+				listed = []
+				for i in session.query(books).all():
+					listed.append(str(i))
+					data = Books(listed, username, passwd)
+				data.ShowAvailableBooks()
+			elif ui == '2':
+				b = input("\nEnter the book you wanna borrow: ")
+				data.BorrowBook(b)
+			elif ui == '4':
+				print(("\nBook Borrow by you: "))
+				data.userBorrowedbook()
+			elif ui == '3':
+				b = input("\nEnter the book name you wanna return: ")
+				data.returnBook(b)
+			elif ui.lower() == 'exit':
+				print('\nThanks for Using OOP Library')
+				exit()
+			if username.lower() == 'admin':
+				if ui == '5':
+					b = input("\nAdd a book: ")
+					data.add_book(b)
+	except KeyboardInterrupt:
+		print("\nExiting.. Thanks for using OOP Library")
+		exit()
