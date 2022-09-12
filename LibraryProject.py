@@ -11,7 +11,7 @@ class Student:
 		if session.query(user).filter_by(username=self.username).first() is not None:
 			current_user = session.query(user).filter_by(username = self.username).first()
 			if pbkdf2_sha256.verify(self.password, current_user.password):
-				print(f"Welcome the to New OOP Library, {current_user.name}\n")
+				print(f"Welcome the to New OOP Library, {current_user.name.title()}\n")
 			else:
 				print("\nIncorrect Account Details\n")
 				exit()
@@ -51,9 +51,9 @@ class Books(Student):
 				session.add(borrowing)
 				session.query(books).filter_by(book = requestedBook).delete()
 				session.commit()
-				print(f'\n{requestedBook.title()} has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
+				print(f'\n"{requestedBook.title()}" has been issued to you, Please return the book after 5 days. Thanks for visiting us\n')
 			else:
-				print(f"Please return the previous book {b.book.title()} first")
+				print(f'Please return the previous book "{b.book.title()}" first')
 		else:
 			print('\nThis book is not available at the moment, Thanks for visiting us\n')
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
 			if username.lower() != 'admin':
 				print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Show Borrowed Books\nType "exit" to exit out of Library''')
 			else:
-				print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Show Borrowed Books\n\n5 = Add a Book\nType "exit" to exit out of Library''')
+				print('''\nChoose a option?\n1 = Show available books\n2 = Borrow a Book\n3 = Return a Book\n4 = Show Borrowed Books\n5 = Add a Book\nType "exit" to exit out of Library''')
 			ui = input("\nWhat do you wanna do: ")
 			if ui == '1':
 				listed = []
@@ -144,7 +144,7 @@ if __name__ == "__main__":
 				exit()
 			if username.lower() == 'admin':
 				if ui == '5':
-					b = input("\nAdd a book: ")
+					b = input("Add a book: ")
 					data.add_book(b)
 	except KeyboardInterrupt:
 		print("\nExiting.. Thanks for using OOP Library")
